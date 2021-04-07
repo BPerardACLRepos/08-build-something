@@ -27,24 +27,37 @@ describe('08-build-something routes', () => {
   });
 
   it('GET responds with all players in db', async () => {
-    const players = [{
+    const player1 = {
       name: 'Dude',
       team: 'Dudebros',
       position: 'hype',
       region: 3,
-    },
-    {
+    }
+
+    const player2 = {
       name: 'Short',
       team: 'Shorts',
       position: 'shortstop',
       region: 5,
-    }]
+    }
 
-    players.forEach(async (player) => {
-      await request(app)
-        .post('/api/v1/players')
-        .send(player)
-    })
+    await request(app)
+      .post('/api/v1/players')
+      .send(player1)
+
+    await request(app)
+      .post('/api/v1/players')
+      .send(player2)
+
+    // const posted = async (player) => {
+    //   await request(app)
+    //     .post('/api/v1/players')
+    //     .send(player)
+    // }
+
+    // players.forEach(player => {
+    //   posted(player);
+    // })
 
     const res = await request(app)
       .get('/api/v1/players')
@@ -63,6 +76,7 @@ describe('08-build-something routes', () => {
       region: '5',
       id: '2',
     }]);
+
   });
 
   it('GET responds with player matching :id', async () => {
