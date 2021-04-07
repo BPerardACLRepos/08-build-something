@@ -8,7 +8,7 @@ describe('08-build-something routes', () => {
     return setup(pool);
   });
 
-  it('adds player to db and responds with player', () => {
+  it('POST player to db and responds with player', async () => {
     const player = {
       name: 'Dude',
       team: 'Dudebros',
@@ -24,5 +24,44 @@ describe('08-build-something routes', () => {
       id: 1,
       ...player
     })
+  });
+
+  it('GET responds with all players in db', async () => {
+    const players = [{
+      name: 'Dude',
+      team: 'Dudebros',
+      position: 'hype',
+      region: 3,
+    },
+    {
+      name: 'Short',
+      team: 'Shorts',
+      position: 'shortstop',
+      region: 5,
+    }]
+
+    players.forEach(async (player) => {
+      await request(app)
+        .post('/api/v1/players')
+        .send(player)
+    })
+
+    const res = await request(app)
+      .get('/api/v1/players')
+
+    expect(res).toEqual({
+      name: 'Dude',
+      team: 'Dudebros',
+      position: 'hype',
+      region: 3,
+      id: 1,
+    },
+      {
+        name: 'Short',
+        team: 'Shorts',
+        position: 'shortstop',
+        region: 5,
+        id: 2,
+      });
   });
 });
