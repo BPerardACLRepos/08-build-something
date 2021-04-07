@@ -13,7 +13,7 @@ describe('08-build-something routes', () => {
       name: 'Dude',
       team: 'Dudebros',
       position: 'hype',
-      region: 3,
+      region: '3',
     }
 
     const res = await request(app)
@@ -21,7 +21,7 @@ describe('08-build-something routes', () => {
       .send(player)
 
     expect(res.body).toEqual({
-      id: 1,
+      id: '1',
       ...player
     })
   });
@@ -49,19 +49,69 @@ describe('08-build-something routes', () => {
     const res = await request(app)
       .get('/api/v1/players')
 
-    expect(res).toEqual({
+    expect(res.body).toEqual({
       name: 'Dude',
       team: 'Dudebros',
       position: 'hype',
-      region: 3,
-      id: 1,
+      region: '3',
+      id: '1',
     },
       {
         name: 'Short',
         team: 'Shorts',
         position: 'shortstop',
-        region: 5,
-        id: 2,
+        region: '5',
+        id: '2',
       });
+  });
+
+  it('GET responds with player matching :id', async () => {
+    const player = {
+      name: 'Dude',
+      team: 'Dudebros',
+      position: 'hype',
+      region: '3',
+    }
+
+    const posted = await request(app)
+      .post('/api/v1/players')
+      .send(player)
+
+    const res = await request(app)
+      .get('/api/v1/players/1')
+
+    expect(res.body).toEqual(posted.body);
+  });
+
+  it('PUT responds with updated player matching :id', async () => {
+    const player = {
+      name: 'Dude',
+      team: 'Dudebros',
+      position: 'hype',
+      region: '3',
+    }
+
+    const updatedPlayer = {
+      name: 'Dude',
+      team: 'Dudebros',
+      position: 'sadness',
+      region: '3',
+    }
+
+    await request(app)
+      .post('/api/v1/players')
+      .send(player)
+
+    const res = await request(app)
+      .put('/api/v1/players/1')
+      .send(updatedPlayer)
+
+    expect(res.body).toEqual({
+      name: 'Dude',
+      team: 'Dudebros',
+      position: 'sadness',
+      region: '3',
+      id: '1',
+    })
   });
 });
