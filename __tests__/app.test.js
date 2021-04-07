@@ -3,7 +3,7 @@ const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
 
-describe('08-build-something routes', () => {
+describe('08-build-something players routes', () => {
   beforeEach(() => {
     return setup(pool);
   });
@@ -143,6 +143,123 @@ describe('08-build-something routes', () => {
 
     expect(res.body).toEqual({
       ...player,
+      id: '1',
+    })
+  });
+});
+
+describe('08-build-something teams routes', () => {
+  beforeEach(() => {
+    return setup(pool);
+  });
+
+  it('POST team to db and responds with team', async () => {
+    const team = {
+      name: 'Dudebros',
+      region: '3',
+    }
+
+    const res = await request(app)
+      .post('/api/v1/teams')
+      .send(team)
+
+    expect(res.body).toEqual({
+      id: '1',
+      ...team
+    })
+  });
+
+  it('GET responds with all teams in db', async () => {
+    const team1 = {
+      name: 'Dudebros',
+      region: 3,
+    }
+
+    const team2 = {
+      name: 'Shorts',
+      region: 5,
+    }
+
+    await request(app)
+      .post('/api/v1/teams')
+      .send(team1)
+
+    await request(app)
+      .post('/api/v1/teams')
+      .send(team2)
+
+    const res = await request(app)
+      .get('/api/v1/teams')
+
+    expect(res.body).toEqual([{
+      name: 'Dudebros',
+      region: '3',
+      id: '1',
+    },
+    {
+      name: 'Shorts',
+      region: '5',
+      id: '2',
+    }]);
+
+  });
+
+  it('GET responds with team matching :id', async () => {
+    const team = {
+      name: 'Dudebros',
+      region: '3',
+    }
+
+    const posted = await request(app)
+      .post('/api/v1/teams')
+      .send(team)
+
+    const res = await request(app)
+      .get('/api/v1/teams/1')
+
+    expect(res.body).toEqual(posted.body);
+  });
+
+  it('PUT responds with updated team matching :id', async () => {
+    const team = {
+      name: 'Dudebros',
+      region: '3',
+    }
+
+    const updatedteam = {
+      name: 'Dudebros',
+      region: '3',
+    }
+
+    await request(app)
+      .post('/api/v1/teams')
+      .send(team)
+
+    const res = await request(app)
+      .put('/api/v1/teams/1')
+      .send(updatedteam)
+
+    expect(res.body).toEqual({
+      ...updatedteam,
+      id: '1',
+    })
+  });
+
+  it('DELETE responds with deleted team matching :id', async () => {
+    const team = {
+      name: 'Dudebros',
+      region: '3',
+    }
+
+    await request(app)
+      .post('/api/v1/teams')
+      .send(team)
+
+    const res = await request(app)
+      .delete('/api/v1/teams/1')
+
+    expect(res.body).toEqual({
+      ...team,
       id: '1',
     })
   });
