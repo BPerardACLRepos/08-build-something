@@ -7,4 +7,22 @@ describe('08-build-something routes', () => {
   beforeEach(() => {
     return setup(pool);
   });
+
+  it('adds player to db and responds with player', () => {
+    const player = {
+      name: 'Dude',
+      team: 'Dudebros',
+      position: 'hype',
+      region: 3,
+    }
+
+    const res = await request(app)
+      .post('/api/v1/players')
+      .send(player)
+
+    expect(res.body).toEqual({
+      id: 1,
+      ...player
+    })
+  });
 });
