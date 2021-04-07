@@ -49,20 +49,20 @@ describe('08-build-something routes', () => {
     const res = await request(app)
       .get('/api/v1/players')
 
-    expect(res.body).toEqual({
+    expect(res.body).toEqual([{
       name: 'Dude',
       team: 'Dudebros',
       position: 'hype',
       region: '3',
       id: '1',
     },
-      {
-        name: 'Short',
-        team: 'Shorts',
-        position: 'shortstop',
-        region: '5',
-        id: '2',
-      });
+    {
+      name: 'Short',
+      team: 'Shorts',
+      position: 'shortstop',
+      region: '5',
+      id: '2',
+    }]);
   });
 
   it('GET responds with player matching :id', async () => {
@@ -107,10 +107,28 @@ describe('08-build-something routes', () => {
       .send(updatedPlayer)
 
     expect(res.body).toEqual({
+      ...updatedPlayer,
+      id: '1',
+    })
+  });
+
+  it('DELETE responds with deleted player matching :id', async () => {
+    const player = {
       name: 'Dude',
       team: 'Dudebros',
-      position: 'sadness',
+      position: 'hype',
       region: '3',
+    }
+
+    await request(app)
+      .post('/api/v1/players')
+      .send(player)
+
+    const res = await request(app)
+      .delete('/api/v1/players/1')
+
+    expect(res.body).toEqual({
+      ...player,
       id: '1',
     })
   });
